@@ -1,11 +1,15 @@
 import 'package:contact_manager_sqflite/pages/home_page.dart';
+import 'package:contact_manager_sqflite/provider/contact_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'pages/NewContact_page.dart';
 import 'pages/details_page.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(ChangeNotifierProvider(
+      create: (context) => ContactProvider(),
+      child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {

@@ -1,10 +1,13 @@
 import 'dart:io';
 
+import 'package:contact_manager_sqflite/main.dart';
 import 'package:contact_manager_sqflite/models/contact_model.dart';
+import 'package:contact_manager_sqflite/provider/contact_provider.dart';
 import 'package:contact_manager_sqflite/utils/constance.dart';
 import 'package:contact_manager_sqflite/utils/helper_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 class NewContactPage extends StatefulWidget {
   static const String routeName = '/new';
@@ -137,7 +140,7 @@ class _NewContactPageState extends State<NewContactPage> {
                       onPressed: _selectDateOfBirth,
                       child: Text(_selectedDate == null
                           ? 'Date Of Birth'
-                          : getFormetedDate(_selectedDate!)),
+                          : getFormetedDate(_selectedDate!)!),
                     ),
                     Row(
                       children: [
@@ -223,7 +226,10 @@ class _NewContactPageState extends State<NewContactPage> {
                       top: -10,
                       child: TextButton(
                         onPressed: _imageReset,
-                        child: const Text(
+                        child: _imagePath == null ? const Text(
+                          'X',
+                          style: TextStyle(fontSize: 16, color: Colors.black),
+                        ) : const Text(
                           'X',
                           style: TextStyle(fontSize: 16, color: Colors.red),
                         ),
@@ -273,7 +279,16 @@ class _NewContactPageState extends State<NewContactPage> {
         group: _group!,
         gender: gender!.name,
         image: _imagePath,
+        dob: getFormetedDate(_selectedDate)
       );
+      context.read<ContactProvider>().addContact(contact)
+      .then((value){
+        showMsg(context, 'Saved');
+        Navigator.pop(context);
+      })
+      .catchError((error){
+        showMsg(context, error.toString());
+      });
     }
   }
 
