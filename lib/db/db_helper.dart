@@ -29,4 +29,11 @@ class DbHelper {
     final db = await _open();
     return db.insert(tableContact, contact.toMap());
   }
+
+
+  Future<List<ContactModel>> getAllContact() async {
+    final db = await _open();
+    final mapList = await db.query(tableContact);
+    return List.generate(mapList.length, (index)=> ContactModel.fromMap(mapList[index]));
+  }
 }
