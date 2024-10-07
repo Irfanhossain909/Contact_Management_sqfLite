@@ -1,6 +1,7 @@
 class ContactModel {
   String? id;
   String name;
+  String mobile;
   String email;
   String address;
   String group;
@@ -11,8 +12,8 @@ class ContactModel {
   String? dob;
 
   ContactModel({
-    required this.id,
     required this.name,
+    required this.mobile,
     required this.email,
     required this.address,
     required this.group,
