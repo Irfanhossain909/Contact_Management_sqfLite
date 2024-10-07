@@ -1,4 +1,8 @@
+import 'package:contact_manager_sqflite/pages/home_page.dart';
 import 'package:flutter/material.dart';
+
+import 'pages/NewContact_page.dart';
+import 'pages/details_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,12 +15,18 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      initialRoute: HomePage.routeName,
+      routes: {
+        HomePage.routeName : (context) => const HomePage(),
+        NewContactPage.routeName : (context) => const NewContactPage(),
+        DetailsPage.routeName : (context) => const DetailsPage(),
+      },
     );
   }
 }
