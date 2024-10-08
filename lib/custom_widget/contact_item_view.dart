@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:contact_manager_sqflite/models/contact_model.dart';
+import 'package:contact_manager_sqflite/pages/details_page.dart';
 import 'package:flutter/material.dart';
 
 class ContactItemView extends StatelessWidget {
@@ -10,6 +11,7 @@ class ContactItemView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      onTap: ()=> Navigator.pushNamed(context, DetailsPage.routeName, arguments: contact.id),
         title: Text(contact.name,style: const TextStyle(fontSize: 24,fontWeight: FontWeight.bold,color: Colors.orange),),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
