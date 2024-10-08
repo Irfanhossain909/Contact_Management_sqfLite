@@ -24,8 +24,16 @@ class ContactProvider extends ChangeNotifier {
   Future<int> deleteContact (ContactModel contact) {
     return _db.deleteContact(contact.id!);
   }
-
+//find contact by id for clicked and go details page methord--------
   Future<ContactModel> getContactById (int id) async {
     return _db.getContactById(id);
+  }
+//favorite value change method--------------------------------
+  Future<void>updateFavorite(ContactModel contact) async{
+    final updatedFavoriteValue = contact.favorate ? 0 : 1;
+    final updatedRoId = await _db.updateFavorite(contact.id!, updatedFavoriteValue);
+    final position = _contactList.indexOf(contact);
+    _contactList[position].favorate = !_contactList[position].favorate;
+    notifyListeners();
   }
 }

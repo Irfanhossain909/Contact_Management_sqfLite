@@ -63,7 +63,9 @@ class HomePage extends StatelessWidget {
                 ),
               ),
               direction: DismissDirection.endToStart,
-              child: ContactItemView(contact: contact),
+              child: ContactItemView(contact: contact, onFavoriteButtonChange: (contact){
+                provider.updateFavorite(contact);
+              },),
               onDismissed: (direction) {
                 context.read<ContactProvider>().deleteContact(contact);
               },

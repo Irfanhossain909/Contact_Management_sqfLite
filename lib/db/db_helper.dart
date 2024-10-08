@@ -49,4 +49,9 @@ class DbHelper {
     final mapList = await db.query(tableContact, where: '$tblContactColId = ?', whereArgs: [id]);
     return ContactModel.fromMap(mapList.first);
   }
+//change value for the favorite query-----------------
+  Future<int> updateFavorite(int id, int value) async{
+    final db = await _open();
+    return db.update(tableContact, {tblContactColFavorite : value}, where: '$tblContactColId = ?', whereArgs: [id]);
+  }
 }
