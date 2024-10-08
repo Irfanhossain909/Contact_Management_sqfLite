@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:contact_manager_sqflite/custom_widget/contact_item_view.dart';
 import 'package:contact_manager_sqflite/main.dart';
 import 'package:contact_manager_sqflite/pages/NewContact_page.dart';
 import 'package:contact_manager_sqflite/provider/contact_provider.dart';
@@ -25,17 +26,47 @@ class HomePage extends StatelessWidget {
       body: Consumer<ContactProvider>(
         builder: (context, provider, child) => ListView.builder(
           itemCount: provider.contactList.length,
-          itemBuilder: (context, index){
+          itemBuilder: (context, index) {
             final contact = provider.contactList[index];
-            return ListTile(
-              title: Text(contact.name,style: const TextStyle(fontSize: 24,fontWeight: FontWeight.bold,color: Colors.orange),),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(contact.mobile,style: TextStyle(fontSize: 18,color: Colors.blue),),
-                  Text(contact.email)
-                ],
+            return Dismissible(
+              key: UniqueKey(),
+              confirmDismiss: (direction) {
+                return showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                          title: Text('Delete ${contact.name}?'),
+                          content:
+                              Text('Are you sure to delete ${contact.name}?'),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context, false);
+                              },
+                              child: const Text('NO'),
+                            ),
+                            OutlinedButton(
+                              onPressed: () {
+                                Navigator.pop(context, true);
+                              },
+                              child: const Text('YES'),
+                            ),
+                          ],
+                        ));
+              },
+              background: Container(
+                padding: const EdgeInsets.only(right: 20),
+                color: Colors.red.shade300,
+                alignment: Alignment.centerRight,
+                child: const Icon(
+                  Icons.delete_forever_outlined,
+                  color: Colors.white,
+                ),
               ),
+              direction: DismissDirection.endToStart,
+              child: ContactItemView(contact: contact),
+              onDismissed: (direction) {
+                context.read<ContactProvider>().deleteContact(contact);
+              },
             );
           },
         ),
