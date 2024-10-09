@@ -26,15 +26,44 @@ class _NewContactPageState extends State<NewContactPage> {
   final _webController = TextEditingController();
   DateTime? _selectedDate;
   String? _imagePath;
-  Gender? gender;
+  Gender? _gender;
   String? _group;
   final _formKey = GlobalKey<FormState>();
+  int? updateContactId;
+  late bool _isUpdating;
 
+  @override
+  void didChangeDependencies() {
+    final arg = ModalRoute.of(context)?.settings.arguments;
+    if(arg != null){
+      updateContactId = arg as int;
+      context.read<ContactProvider>().getContactById(updateContactId!)
+      .then((contact){
+        setState(() {
+          _nameController.text = contact.name;
+          _mobileController.text = contact.mobile;
+          _emailController.text = contact.email;
+          _addressController.text = contact.address;
+          _webController.text = contact.website ?? '';
+          _imagePath = contact.image ?? '';
+          _group = contact.group;
+          _gender = contact.gender == Gender.Male.name ? Gender.Male : Gender.Female;
+          if(contact.dob != null){
+            _selectedDate = DateTime.parse(contact.dob!);
+          }else{
+            _selectedDate = null;
+          }
+        });
+      });
+    }
+    _isUpdating = updateContactId == null ? false : true;
+    super.didChangeDependencies();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('New Contact'),
+        title: Text(_isUpdating ? 'Updating' : 'New Contact'),
         actions: [
           IconButton(
             onPressed: _save,
@@ -147,20 +176,20 @@ class _NewContactPageState extends State<NewContactPage> {
                         Text(Gender.Male.name),
                         Radio<Gender>(
                           value: Gender.Male,
-                          groupValue: gender,
+                          groupValue: _gender,
                           onChanged: (value) {
                             setState(() {
-                              gender = value!;
+                              _gender = value!;
                             });
                           },
                         ),
                         Text(Gender.Female.name),
                         Radio<Gender>(
                           value: Gender.Female,
-                          groupValue: gender,
+                          groupValue: _gender,
                           onChanged: (value) {
                             setState(() {
-                              gender = value!;
+                              _gender = value!;
                             });
                           },
                         )
@@ -208,34 +237,35 @@ class _NewContactPageState extends State<NewContactPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  Stack(children: [
-                    Card(
-                        child: _imagePath == null
-                            ? const Icon(
-                                Icons.person,
-                                size: 100,
-                              )
-                            : Image.file(
-                                fit: BoxFit.cover,
-                                File(_imagePath!),
-                                width: 100,
-                                height: 100,
-                              )),
-                    Positioned(
-                      right: -20,
-                      top: -10,
-                      child: TextButton(
-                        onPressed: _imageReset,
-                        child: _imagePath == null ? const Text(
-                          'X',
-                          style: TextStyle(fontSize: 16, color: Colors.black),
-                        ) : const Text(
-                          'X',
-                          style: TextStyle(fontSize: 16, color: Colors.red),
+                  Expanded(
+                    child: Stack(children: [
+                      Card(
+                          child: _imagePath == null
+                              ? Image.asset(
+                            'assets/images/images.png',
+                          )
+                              : Image.file(
+                                  fit: BoxFit.cover,
+                                  File(_imagePath!),
+                                  width: 100,
+                                  height: 100,
+                                )),
+                      Positioned(
+                        right: -20,
+                        top: -10,
+                        child: TextButton(
+                          onPressed: _imageReset,
+                          child: _imagePath == null ? const Text(
+                            'X',
+                            style: TextStyle(fontSize: 16, color: Colors.black),
+                          ) : const Text(
+                            'X',
+                            style: TextStyle(fontSize: 16, color: Colors.red),
+                          ),
                         ),
                       ),
-                    ),
-                  ]),
+                    ]),
+                  ),
                   Column(
                     children: [
                       OutlinedButton.icon(
@@ -264,7 +294,7 @@ class _NewContactPageState extends State<NewContactPage> {
   }
 
   void _save() {
-    if (gender == null) {
+    if (_gender == null) {
       showMsg(context, 'Please Select Gender');
       return;
     }
@@ -277,18 +307,32 @@ class _NewContactPageState extends State<NewContactPage> {
         address: _addressController.text,
         website: _webController.text.isEmpty ? null : _webController.text,
         group: _group!,
-        gender: gender!.name,
+        gender: _gender!.name,
         image: _imagePath,
         dob: getFormetedDate(_selectedDate)
       );
-      context.read<ContactProvider>().addContact(contact)
-      .then((value){
-        showMsg(context, 'Saved');
-        Navigator.pop(context);
-      })
-      .catchError((error){
-        showMsg(context, error.toString());
-      });
+
+      if(_isUpdating){
+        contact.id = updateContactId!;
+        context.read<ContactProvider>().updateContact(contact)
+            .then((value){
+          showMsg(context, 'Updated' );
+          Navigator.pop(context);
+        })
+            .catchError((error){
+          showMsg(context, error.toString());
+        });
+      }else{
+        context.read<ContactProvider>().addContact(contact)
+            .then((value){
+          showMsg(context, 'Saved');
+          Navigator.pop(context);
+        })
+            .catchError((error){
+          showMsg(context, error.toString());
+        });
+      }
+
     }
   }
 

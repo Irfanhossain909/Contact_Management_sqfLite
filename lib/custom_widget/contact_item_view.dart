@@ -46,6 +46,15 @@ class ContactItemView extends StatelessWidget {
             color: Colors.red,
           ),
         ),
-        leading: ClipOval(child: Image.file(File(contact.image!))));
+        leading: ClipOval(
+            child: contact.image == null
+                ? Image.asset(
+              'assets/images/images.png',
+            )
+                : Image.file(
+              File(contact.image!),
+            ),
+        )
+    );
   }
 }

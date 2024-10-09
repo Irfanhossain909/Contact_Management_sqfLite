@@ -34,6 +34,7 @@ class _HomePageState extends State<HomePage> {
         child: const Icon(Icons.add),
         onPressed: () => Navigator.pushNamed(context, NewContactPage.routeName),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
         padding: EdgeInsets.zero,
         child: BottomNavigationBar(

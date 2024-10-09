@@ -30,6 +30,11 @@ class DbHelper {
     final db = await _open();
     return db.insert(tableContact, contact.toMap());
   }
+// Update Into Database query------------------
+  Future<int> updateContact(ContactModel contact) async{
+    final db = await _open();
+    return db.update(tableContact, contact.toMap(),where: '$tblContactColId = ? ', whereArgs: [contact.id]);
+  }
 
 //get All Data as a list query----------------------
   Future<List<ContactModel>> getAllContact() async {

@@ -8,11 +8,20 @@ class ContactProvider extends ChangeNotifier {
 
 //Create a DbHelper Object----------------------
   final _db = DbHelper();
-  //create addContact into add Data in Database----
+//create addContact into add Data in Database----
   Future<void> addContact(ContactModel contact) async{
     final rowId = await _db.insertContact(contact);
     contact.id = rowId;
     _contactList.add(contact);
+    notifyListeners();
+  }
+
+  //create UpdateContact into add Data in Database----
+  Future<void> updateContact(ContactModel contact) async{
+    await _db.updateContact(contact);
+    final position = _contactList.indexWhere((item) => item.id == contact.id);
+    _contactList.removeAt(position);
+    _contactList.insert(position, contact);
     notifyListeners();
   }
   //Crete all contact calling methord------
