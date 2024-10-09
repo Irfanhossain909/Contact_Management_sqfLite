@@ -38,6 +38,12 @@ class DbHelper {
     return List.generate(mapList.length, (index)=> ContactModel.fromMap(mapList[index]));
   }
 
+//All favorite contact query list --------------
+  Future<List<ContactModel>> getAllFavoriteContact() async{
+    final db = await _open();
+    final mapList = await db.query(tableContact, orderBy: tblContactColName, where: '$tblContactColFavorite = ?', whereArgs: [1]);
+    return List.generate(mapList.length, (index)=> ContactModel.fromMap(mapList[index]));
+  }
 //Delete A specefic contact from database query--------
   Future<int> deleteContact(int id) async{
     final db = await _open();

@@ -20,6 +20,11 @@ class ContactProvider extends ChangeNotifier {
     _contactList = await _db.getAllContact();
     notifyListeners();
   }
+  //Crete all Favorite contact list calling method------
+  getAllFavoriteContact() async{
+    _contactList = await _db.getAllFavoriteContact();
+    notifyListeners();
+  }
   //delete data specefic contact from database methord-----
   Future<int> deleteContact (ContactModel contact) {
     return _db.deleteContact(contact.id!);

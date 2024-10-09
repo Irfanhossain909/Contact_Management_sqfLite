@@ -7,14 +7,25 @@ import 'package:contact_manager_sqflite/provider/contact_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   static const String routeName = '/';
-
   const HomePage({super.key});
 
+
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  int _currentIndex = 0;
+  @override
+  void didChangeDependencies() {
+    context.read<ContactProvider>().getAllContacts();
+    super.didChangeDependencies();
+  }
   @override
   Widget build(BuildContext context) {
-    context.read<ContactProvider>().getAllContacts();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home Page'),
@@ -22,6 +33,35 @@ class HomePage extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () => Navigator.pushNamed(context, NewContactPage.routeName),
+      ),
+      bottomNavigationBar: BottomAppBar(
+        padding: EdgeInsets.zero,
+        child: BottomNavigationBar(
+          onTap: (index){
+            setState(() {
+              _currentIndex = index;
+              if(_currentIndex == 1){
+                context.read<ContactProvider>().getAllFavoriteContact();
+              }
+              if(_currentIndex == 0){
+                context.read<ContactProvider>().getAllContacts();
+              }
+            });
+          },
+          currentIndex: _currentIndex,
+          selectedItemColor: Colors.red,
+          selectedFontSize: 20,
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.list),
+              label: 'All',
+            ),BottomNavigationBarItem(
+              icon: Icon(Icons.favorite),
+              label: 'Favorite',
+            ),
+
+          ],
+        ),
       ),
       body: Consumer<ContactProvider>(
         builder: (context, provider, child) => ListView.builder(
