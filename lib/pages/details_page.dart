@@ -160,7 +160,12 @@ class _DetailsPageState extends State<DetailsPage> {
   }
 
   void _openMap(String address) async{
-    final url = 'geo:$address';
+    String url;
+    if(Platform.isAndroid){
+      url = 'geo:0,0?q=$address';
+    }else{
+      url = 'http://maps.apple.com/?q=$address';
+    }
     if(await canLaunchUrlString(url)){
       await launchUrlString(url);
     }else{
