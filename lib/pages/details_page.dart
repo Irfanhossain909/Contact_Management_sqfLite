@@ -2,8 +2,10 @@ import 'dart:io';
 
 import 'package:contact_manager_sqflite/pages/NewContact_page.dart';
 import 'package:contact_manager_sqflite/provider/contact_provider.dart';
+import 'package:contact_manager_sqflite/utils/helper_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class DetailsPage extends StatefulWidget {
   static const String routeName = '/details';
@@ -75,11 +77,15 @@ class _DetailsPageState extends State<DetailsPage> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            _callNumber(contact.mobile);
+                          },
                           icon: const Icon(Icons.call),
                         ),
                         IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            _sendSms(contact.mobile);
+                          },
                           icon: const Icon(Icons.sms),
                         ),
                       ],
@@ -88,18 +94,26 @@ class _DetailsPageState extends State<DetailsPage> {
                   ListTile(
                     title: Text(contact.email),
                     trailing: IconButton(
-                        onPressed: () {}, icon: const Icon(Icons.email)),
+                        onPressed: () {
+                          _sendEmail(contact.email);
+                        },
+                        icon: const Icon(Icons.email)),
                   ),
                   ListTile(
                     title: Text(contact.address),
                     trailing: IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          _openMap(contact.address);
+                        },
                         icon: const Icon(Icons.location_on_rounded)),
                   ),
                   ListTile(
                     title: Text(contact.website!),
                     trailing: IconButton(
-                        onPressed: () {}, icon: const Icon(Icons.web)),
+                        onPressed: () {
+                          _openWebsite(contact.website);
+                        },
+                        icon: const Icon(Icons.web)),
                   ),
                 ],
               );
@@ -116,5 +130,50 @@ class _DetailsPageState extends State<DetailsPage> {
         ),
       ),
     );
+  }
+
+  void _callNumber(String mobile) async{
+    final url = 'tel:$mobile';
+    if(await canLaunchUrlString(url)){
+      await launchUrlString(url);
+    }else{
+      showMsg(context, 'Cannot Perform this task');
+    }
+  }
+
+  void _sendSms(String mobile) async{
+    final url = 'sms:$mobile';
+    if(await canLaunchUrlString(url)){
+      await launchUrlString(url);
+    }else{
+      showMsg(context, 'Cannot perform this task');
+    }
+  }
+
+  void _sendEmail(String email) async{
+    final url = 'mailto:$email';
+    if(await canLaunchUrlString(url)){
+      await launchUrlString(url);
+    }else{
+      showMsg(context, 'Cannor perform this task');
+    }
+  }
+
+  void _openMap(String address) async{
+    final url = 'geo:$address';
+    if(await canLaunchUrlString(url)){
+      await launchUrlString(url);
+    }else{
+      showMsg(context, 'Cannot perform this task');
+    }
+  }
+
+  void _openWebsite(String? website) async{
+    final url = 'https:$website';
+    if(await canLaunchUrlString(url)){
+      await launchUrlString(url);
+    }else{
+      showMsg(context, 'Cannot perform this task');
+    }
   }
 }
